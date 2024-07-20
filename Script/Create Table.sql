@@ -202,3 +202,268 @@ modifiedon timestamp,
 modifiedby varchar(255),
 status integer
 )
+
+CREATE TABLE "public".cwusummary (
+summaryid uuid CONSTRAINT pk_cwusummary PRIMARY KEY,
+sistercompanyid uuid REFERENCES sistercompany (sistercompanyid),
+cwuid uuid REFERENCES cwu (cwuid),
+cwucategoryid uuid REFERENCES cwucategory (cwucategoryid),
+cwucategoryname varchar(255),
+summary varchar(255),
+createdon timestamp,
+createdby varchar(255),
+modifiedon timestamp,
+modifiedby varchar(255)
+)
+
+CREATE TABLE "public".securityrole (
+securityroleid uuid CONSTRAINT pk_securityrole PRIMARY KEY,
+sistercompanyid uuid REFERENCES sistercompany (sistercompanyid),
+businessunitid uuid REFERENCES businessunit (businessunitid),
+"name" varchar(255),
+jsonrole json,
+createdon timestamp,
+createdby varchar(255),
+modifiedon timestamp,
+modifiedby varchar(255),
+status integer
+)
+
+CREATE TABLE "public".team (
+teamid uuid CONSTRAINT pk_team PRIMARY KEY,
+sistercompanyid uuid REFERENCES sistercompany (sistercompanyid),
+businessunitid uuid REFERENCES businessunit (businessunitid),
+"name" varchar(255),
+description varchar(255),
+createdon timestamp,
+createdby varchar(255),
+modifiedon timestamp,
+modifiedby varchar(255),
+status integer
+)
+
+CREATE TABLE "public". workgroup (
+workgroupid uuid CONSTRAINT pk_workgroup PRIMARY KEY,
+businessunitid uuid REFERENCES businessunit (businessunitid),
+sistercompanyid uuid REFERENCES sistercompany (sistercompanyid),
+ownerid uuid,
+"name" varchar(255),
+description varchar(255),
+email varchar(255),
+createdon timestamp,
+createdby varchar(255),
+modifiedon timestamp,
+modifiedby varchar(255),
+status integer
+)
+
+CREATE TABLE "public".ticket (
+ticketid uuid CONSTRAINT pk_ticket PRIMARY KEY,
+customerid uuid REFERENCES customer (customerid),
+addressid uuid REFERENCES address (addressid),
+productid uuid REFERENCES product (productid),
+categoryid uuid REFERENCES category (categoryid),
+ownerid uuid,
+workgroupid uuid REFERENCES workgroup (workgroupid),
+sistercompanyid uuid REFERENCES sistercompany (sistercompanyid),
+productname varchar(255),
+productno varchar(255),
+contactmethod varchar(255),
+incomingphonenumber varchar(255),
+sladays integer,
+duedate timestamp,
+priority varchar(255),
+status integer,
+summary varchar(255),
+transactiontime timestamp,
+transactionamount integer,
+currency varchar(255),
+channel varchar(255),
+createdon timestamp,
+createdby varchar(255),
+modifiedon timestamp,
+modifiedby varchar(255),
+closedon timestamp,
+closedby varchar(255),
+reopenedon timestamp,
+reopenedby varchar(255),
+canceledon timestamp,
+canceledby varchar(255),
+ticketnumber varchar(255)
+)
+
+CREATE TABLE "public".systemuser (
+systemuserid uuid CONSTRAINT pk_systemuser PRIMARY KEY,
+sistercompanyid uuid REFERENCES sistercompany (sistercompanyid),
+businessunitid uuid REFERENCES businessunit (businessunitid),
+securityroleid uuid REFERENCES securityrole (securityroleid),
+username varchar(255),
+"password" varchar(255),
+firstname varchar(255),
+lastname varchar(255),
+fullname varchar(255),
+phone varchar(255),
+email varchar(255),
+fax varchar(255),
+createdon timestamp,
+createdby varchar(255),
+modifiedon timestamp,
+modifiedby varchar(255),
+lastlogin timestamp,
+passwordchanged boolean,
+status integer
+)
+
+CREATE TABLE "public".servicelevel (
+servicelevelid uuid CONSTRAINT pk_servicelevel PRIMARY KEY,
+productid uuid REFERENCES product (productid),
+categoryid uuid REFERENCES category (categoryid),
+sistercompanyid uuid REFERENCES sistercompany (sistercompanyid),
+workgroupid uuid REFERENCES workgroup (workgroupid),
+"name" varchar(255),
+sladays integer,
+lastusedon timestamp,
+lastusedby varchar(255),
+createdon timestamp,
+createdby varchar(255),
+modifiedon timestamp,
+modifiedby varchar(255),
+status integer
+)
+
+CREATE TABLE "public".task (
+taskid uuid CONSTRAINT pk_task PRIMARY KEY,
+ticketid uuid REFERENCES ticket(ticketid),
+ownerid uuid,
+firstownerid uuid,
+tasknumber varchar(255),
+ticketnumber varchar(255),
+priority varchar(255),
+summary varchar(255),
+"owner" varchar(255),
+firstowner varchar(255),
+createdon timestamp,
+createdby varchar(255),
+modifiedon timestamp,
+modifiedby varchar(255),
+openedon timestamp,
+openedby varchar(255),
+completedon timestamp,
+completedby varchar(255),
+canceledon timestamp,
+canceledby varchar(255),
+status integer
+)
+
+CREATE TABLE "public".notes (
+notesid uuid CONSTRAINT pk_notes PRIMARY KEY,
+ticketid uuid REFERENCES ticket(ticketid),
+isdocument boolean,
+notetext text,
+files json,
+createdon timestamp,
+createdby varchar(255),
+modifiedon timestamp,
+modifiedby varchar(255)
+)
+
+CREATE TABLE "public".ticketauditlog (
+ticketauditlogid uuid CONSTRAINT pk_ticketauditlog PRIMARY KEY,
+ticketid uuid REFERENCES ticket(ticketid),
+modifiedon timestamp,
+modifiedby varchar(255),
+"detail" json
+)
+
+CREATE TABLE "public".organizationclosure (
+organizationclosureid uuid CONSTRAINT pk_organizationclosure PRIMARY KEY,
+systemuserid uuid REFERENCES systemuser (systemuserid),
+sistercompanyid uuid REFERENCES sistercompany (sistercompanyid),
+startdate timestamp,
+enddate timestamp,
+createdon timestamp,
+createdby varchar(255),
+modifiedon timestamp,
+modifiedby varchar(255),
+note varchar(255),
+status integer
+)
+
+CREATE TABLE "public".teammember (
+teammemberid uuid CONSTRAINT pk_teammember PRIMARY KEY,
+teamid uuid REFERENCES team (teamid),
+systemuserid uuid REFERENCES systemuser(systemuserid),
+teammembername varchar(255),
+rolename varchar(255),
+createdon timestamp,
+createdby varchar(255),
+modifiedon timestamp,
+modifiedby varchar(255)
+)
+
+CREATE TABLE "public".tasknotes (
+tasknotesid uuid CONSTRAINT pk_tasknotes PRIMARY KEY,
+ticketid uuid REFERENCES ticket(ticketid),
+taskid uuid REFERENCES task (taskid),
+tasknotetext text,
+issubmitted boolean,
+createdon timestamp,
+createdby varchar(255),
+modifiedon timestamp,
+modifiedby varchar(255)
+)
+
+CREATE TABLE "public".applicationauditlog(
+applicationauditlogid uuid CONSTRAINT pk_applicationauditlog PRIMARY KEY,
+entityid uuid,
+entityname varchar(255),
+"detail" json
+)
+
+CREATE TABLE "public".rolemenu (
+rolemenuid uuid CONSTRAINT pk_rolemenu PRIMARY KEY,
+securityroleid uuid REFERENCES securityrole (securityroleid),
+menuid uuid
+)
+
+CREATE TABLE "public".mastercity (
+cityid uuid CONSTRAINT pk_mastercity PRIMARY KEY,
+provinceid uuid,
+"name" varchar(255)
+)
+
+CREATE TABLE "public".masterprovince (
+provinceid uuid CONSTRAINT pk_masterprovince PRIMARY KEY,
+"name" varchar(255)
+)
+
+CREATE TABLE "public".activityreport(
+reportid uuid CONSTRAINT pk_activityreport PRIMARY KEY,
+sistercompanyid uuid REFERENCES sistercompany (sistercompanyid),
+performedby varchar(255),
+datetime timestamp,
+"action" varchar(255),
+username varchar(255),
+fullname varchar(255),
+oldrole uuid,
+newrole uuid,
+oldstatus integer,
+newstatus integer,
+performedbyid uuid
+)
+
+CREATE TABLE "public".menu (
+menuid uuid CONSTRAINT pk_menu PRIMARY KEY,
+parentid uuid,
+"label" varchar(255),
+"name" varchar(255),
+isaction boolean,
+"sequence" integer
+)
+
+CREATE TABLE "public".masterdataauditlog (
+masterdataauditlogid uuid CONSTRAINT pk_masterdataauditlog PRIMARY KEY,
+entityid uuid,
+entityname varchar(255),
+"detail" json
+)
